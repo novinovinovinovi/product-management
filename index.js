@@ -7,13 +7,13 @@ const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const flash = require("express-flash");
 
-const routeClient = require("./routes/client/index.route");
-const routeAdmin = require("./routes/admin/index.route");
+const routeClient = require(`${__dirname}/routes/client/index.route`);
+const routeAdmin = require(`${__dirname}/routes/admin/index.route`);
 
 const mongoose = require("mongoose");
-const database = require("./config/database");
+const database = require(`${__dirname}/config/database`);
 
-const systemConfig = require("./config/system");
+const systemConfig = require(`${__dirname}/config/system`);
 
 database.connect();
 
@@ -25,8 +25,6 @@ app.set("views", `${__dirname}/views`);
 app.set("view engine", "pug");
 
 app.use(methodOverride("_method"));
-
-console.log(__dirname);
 
 // set up public folder
 app.use(express.static(`${__dirname}/public`));
