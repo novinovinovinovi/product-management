@@ -3,10 +3,20 @@ const Product = require("../../models/product.model");
 const filterStatusHelper = require("../../helpers/filterStatus");
 const paginationHelper = require("../../helpers/pagination");
 const searchHelper = require("../../helpers/search");
+const sortProductHelper = require("../../helpers/sortProduct");
 const systemConfig = require("../../config/system");
 
 // [GET] /admin/products
 module.exports.index = async (req, res) => {
+  const sortList = [
+    { value: "position-desc", tag: "Vị trí tăng dần" },
+    { value: "position-asc", tag: "Vị trí giảm dần" },
+    { value: "price-desc", tag: "Giá giảm dần" },
+    { value: "price-asc", tag: "Giá tăng dần" },
+    { value: "title-desc", tag: "Tiêu đề A - Z" },
+    { value: "title-asc", tag: "Tiêu đề Z - A" },
+  ];
+
   // Filter Status
   const filterStatus = filterStatusHelper(req.query);
 
@@ -41,8 +51,13 @@ module.exports.index = async (req, res) => {
   );
   // End Pagination
 
+  // Sort
+  const sort = sortProductHelper(req.query);
+
+  // End Sort
+
   const products = await Product.find(find)
-    .sort({ position: "desc" })
+    .sort(sort)
     .limit(objectPagination.limitItems)
     .skip(objectPagination.skip);
 
@@ -52,6 +67,7 @@ module.exports.index = async (req, res) => {
     filterStatus: filterStatus,
     keyword: keyword,
     pagination: objectPagination,
+    sortList: sortList,
   });
 };
 
@@ -136,10 +152,6 @@ module.exports.createPost = async (req, res) => {
     req.body.position = parseInt(req.body.position);
   }
 
-  if (req.file) {
-    req.body.thumbnail = `/uploads/${req.file.filename}`;
-  }
-
   const product = new Product(req.body);
   await product.save();
 
@@ -149,7 +161,8 @@ module.exports.createPost = async (req, res) => {
 // [GET] /admin/products/edit/:id
 module.exports.editProduct = async (req, res) => {
   try {
-    const previousPage = req.cookies.previousPage || `${systemConfig.prefixAdmin}/products`;
+    const previousPage =
+      req.cookies.previousPage || `${systemConfig.prefixAdmin}/products`;
     const id = req.params.id;
     const find = {
       deleted: false,
@@ -174,9 +187,10 @@ module.exports.editPatch = async (req, res) => {
   req.body.discountPercentage = parseInt(req.body.discountPercentage);
   req.body.stock = parseInt(req.body.stock);
   req.body.position = parseInt(req.body.position);
-  if (req.file) {
-    req.body.thumbnail = `/uploads/${req.file.filename}`;
-  }
+
+  // if (req.file) {
+  //   req.body.thumbnail = `/uploads/${req.file.filename}`;
+  // }
 
   const id = req.params.id;
   try {

@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const flash = require("express-flash");
+const path = require("path");
 
 const routeClient = require(`${__dirname}/routes/client/index.route`);
 const routeAdmin = require(`${__dirname}/routes/admin/index.route`);
@@ -25,6 +26,13 @@ app.set("views", `${__dirname}/views`);
 app.set("view engine", "pug");
 
 app.use(methodOverride("_method"));
+
+// TinyMCE
+app.use(
+  "/tinymce",
+  express.static(path.join(__dirname, "node_modules", "tinymce"))
+);
+// End TinyMCE
 
 // set up public folder
 app.use(express.static(`${__dirname}/public`));

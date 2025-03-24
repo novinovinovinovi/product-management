@@ -186,8 +186,41 @@ if (uploadImage) {
 const buttonsEditProduct = document.querySelectorAll("[button-edit-product]");
 buttonsEditProduct.forEach((button) => {
   button.addEventListener("click", () => {
-    document.cookie = `previousPage=${encodeURIComponent(window.location.href)}; path=/;`;
+    document.cookie = `previousPage=${encodeURIComponent(
+      window.location.href
+    )}; path=/;`;
     window.location.href = button.getAttribute("href");
   });
 });
 // End Edit Button
+
+// Sort
+const sort = document.querySelector("[sort]");
+if (sort) {
+  let url = new URL(window.location.href);
+  const sortSelect = sort.querySelector("[sort-select]");
+  const sortClear = sort.querySelector("[sort-clear]");
+
+  sortSelect.addEventListener("change", (event) => {
+    const [sortKey, sortValue] = event.target.value.split("-");
+
+    url.searchParams.set("sortKey", sortKey);
+    url.searchParams.set("sortValue", sortValue);
+    window.location.href = url;
+  });
+
+  sortClear.addEventListener("click", () => {
+    url.searchParams.delete("sortKey");
+    url.searchParams.delete("sortValue");
+    window.location.href = url;
+  });
+
+  const sortKey = url.searchParams.get("sortKey");
+  const sortValue = url.searchParams.get("sortValue");
+  if (sortKey && sortValue) {
+    const sortString = `${sortKey}-${sortValue}`;
+    const optionSelected = sort.querySelector(`option[value=${sortString}]`);
+    optionSelected.setAttribute("selected", "true");
+  }
+}
+// End Sort

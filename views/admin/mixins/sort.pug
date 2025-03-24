@@ -1,0 +1,14 @@
+mixin sort(sortList)
+  div(sort)
+    select(
+      class="form-control"
+      name="sort"
+      sort-select 
+    )
+      each item in sortList
+        option(value=item.value) #{item.tag}
+
+    button(
+      class="btn btn-danger mt-2"
+      sort-clear
+    ) Clear
